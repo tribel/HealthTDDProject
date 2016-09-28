@@ -1,4 +1,4 @@
-package mokitoTest.testMockito;
+package com.health;
 
 
 public class HealthIndicators {

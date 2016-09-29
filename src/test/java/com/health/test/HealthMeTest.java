@@ -18,21 +18,20 @@ public class HealthMeTest {
 	
 	HealthService healsService = new HealthService();
 	
+	private void inputValues(LocalDate date) {
+		healsService.setWaterRule(MIN_WATER_COUNT, date);
+		healsService.setCaloriesRule(MIN_CALORIES_COUNT, date);
+		healsService.setStepsRule(MIN_STEP_AMOUNT, date);
+		healsService.setHoursRule(MIN_HOURS_AMOUNT, date);
+	}
 	
 	@Before
 	public void initRules() {
 		LocalDate tmpDate = LocalDate.of(2016, 9, 1);
-		
-		healsService.setWaterRule(MIN_WATER_COUNT, tmpDate);
-		healsService.setCaloriesRule(MIN_CALORIES_COUNT, tmpDate);
-		healsService.setStepsRule(MIN_STEP_AMOUNT, tmpDate);
-		healsService.setHoursRule(MIN_HOURS_AMOUNT, tmpDate);
-		
+		inputValues(tmpDate);
+
         tmpDate = LocalDate.of(2016, 9, 2);
-		healsService.setWaterRule(MIN_WATER_COUNT, tmpDate);
-		healsService.setCaloriesRule(MIN_CALORIES_COUNT, tmpDate);
-		healsService.setStepsRule(MIN_STEP_AMOUNT, tmpDate);
-		healsService.setHoursRule(MIN_HOURS_AMOUNT, tmpDate);
+		inputValues(tmpDate);
 	}
 	
 	@Test
@@ -51,10 +50,10 @@ public class HealthMeTest {
 		LocalDate tmpDate = LocalDate.of(2016, 9, 1);
 		
 		healsService.eatCalories(500, tmpDate);
-		assertEquals(healsService.dailyCaloriesRest(tmpDate), 800);
+		assertEquals(healsService.dailyCaloriesRest(tmpDate), 800, 0.01);
 		
 		healsService.eatCalories(100, tmpDate);
-		assertEquals(healsService.dailyCaloriesRest(tmpDate), 700);
+		assertEquals(healsService.dailyCaloriesRest(tmpDate), 700, 0.01);
 	}
 	
 	@Test
@@ -69,6 +68,7 @@ public class HealthMeTest {
 		assertEquals(healsService.dailyStepsRest(tmpDate), 100, 0.01);
 	}
 	
+	@Test
 	public void moveHours() {
 		LocalDate tmpDate = LocalDate.of(2016, 9, 1);
 		

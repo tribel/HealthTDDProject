@@ -1,15 +1,17 @@
 package com.health;
 
 import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 public class HealthService {
 
-	Map<LocalDate, HealthIndicators> fullReport;
+	TreeMap<LocalDate, HealthIndicators> fullReport;
 	
 	public HealthService() {
-		this.fullReport = new  HashMap<>();
+		this.fullReport = new TreeMap<>();
 	}
 	
 	
@@ -26,22 +28,24 @@ public class HealthService {
 		fullReport.get(tmpDate).addStepsAmount(i);
 	}
 	
+	public void moveHours(double d, LocalDate tmpDate) {
+		fullReport.get(tmpDate).addMoveHours(d);
+	}
 	
 	public double dailyWaterRest(LocalDate date) {
-		return fullReport.get(date).getWaterLiter();
+		return fullReport.get(date).getWaterRemain();
 	}
 
-	public int dailyCaloriesRest(LocalDate tmpDate) {
-		return fullReport.get(tmpDate).getCalories();
+	public double dailyCaloriesRest(LocalDate tmpDate) {
+		return fullReport.get(tmpDate).getCaloriesRemain();
 	}
 	
 	public double dailyStepsRest(LocalDate tmpDate) {
-		return fullReport.get(tmpDate).getStepsAmount();
+		return fullReport.get(tmpDate).getStepsRemain();
 	}
 	
-	
 	public double dailyHoursRest(LocalDate tmpDate) {
-		return fullReport.get(tmpDate).getHoursAmount();
+		return fullReport.get(tmpDate).getHoursRemain();
 	}
 	
 	public void setWaterRule(double d, LocalDate tmpDate) {
@@ -72,18 +76,47 @@ public class HealthService {
 	}
 
 
-	public void moveHours(double d, LocalDate tmpDate) {
-		fullReport.get(tmpDate).addMoveHours(d);
+	
+	public double[] getDailyProcentReport(LocalDate tmpDate) {
+		HealthIndicators indicators = fullReport.get(tmpDate);
+
+		double[] resultArray = new double[4];
+		resultArray[0] = indicators.calculateWaterPercent();
+		resultArray[1] = indicators.calculateHoursPercent();
+		resultArray[2] = indicators.calculateCaloriesPercent();
+		resultArray[3] = indicators.calculateStepsPercent();
+		
+		return resultArray;
 	}
 
 
+	public double[] getDatePeriodProcentReport(LocalDate startDate, LocalDate endDate) {
+		Collection<HealthIndicators> healthIndicators = fullReport.subMap(startDate, true, endDate, true).values();
+		double[] resultArray = new double[4];
+		
+		 resultArray[0] = sortCollection((o1,o2) -> (int)(o1.calculateWaterPercent() - o2.calculateWaterPercent()), 
+				 healthIndicators).calculateWaterPercent();
+		 
+		 resultArray[1] = sortCollection((o1,o2) -> (int)(o1.calculateCaloriesPercent() - o2.calculateCaloriesPercent()), 
+				 healthIndicators).calculateCaloriesPercent();
+		 
+		 resultArray[2] = sortCollection((o1,o2) -> (int)(o1.calculateStepsPercent() - o2.calculateStepsPercent()), 
+				 healthIndicators).calculateStepsPercent();
+		 
+		 resultArray[3] = sortCollection((o1,o2) -> (int)(o1.calculateHoursPercent() - o2.calculateHoursPercent()), 
+				 healthIndicators).calculateHoursPercent();
 
-
-
-
-
-
+		return resultArray;
+	}
 	
-
+	private HealthIndicators sortCollection(Comparator<? super HealthIndicators> comparator, 
+			Collection<HealthIndicators> hi) {
+		
+		return hi.stream()
+				.sorted(comparator)
+				.collect(Collectors.toList())
+				.get(hi.size()/2);
+	}
+	
 	
 }

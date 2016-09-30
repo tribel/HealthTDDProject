@@ -4,7 +4,6 @@ import java.time.LocalDate;
 import java.util.Arrays;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.health.HealthService;
@@ -38,11 +37,10 @@ public class HealthReportTest {
 	}
 	
 	@Test
-	@Ignore
 	public void dailyReport() {
 		LocalDate tmpDate = LocalDate.of(2016, 9, 26);
 		inputValues(tmpDate);
-		double[] cmpArray = {75.0, 10.0, 15.0, 65.0};
+		double[] cmpArray = {75.0, 65.0, 10.0, 15.0};
 		
 		healsService.drinkWater(1.5, tmpDate);
 		healsService.eatCalories(130, tmpDate);
@@ -56,13 +54,25 @@ public class HealthReportTest {
 	public void datePeriodReport() {
 		LocalDate startDate = LocalDate.of(2016, 9, 1);
 		LocalDate endDate = startDate.plusDays(2);
-		//System.out.println(endDate);
 		
 		healsService.eatCalories(1300, startDate);
-		healsService.drinkWater(0.5, startDate.plusDays(1));
-		System.out.println(Arrays.toString(healsService.getDatePeriodProcentReport(startDate, endDate)));
-		//healsService.getDatePeriodProcentReport(startDate, endDate);
+		healsService.drinkWater(1.5, startDate);
+		healsService.moveHours(0.7, startDate);
+		healsService.makeSteps(1200, startDate);
 		
+		healsService.eatCalories(130, LocalDate.of(2016, 9, 2));
+		healsService.drinkWater(0.7, LocalDate.of(2016, 9, 2));
+		healsService.moveHours(1.5, LocalDate.of(2016, 9, 2));
+		healsService.makeSteps(400, LocalDate.of(2016, 9, 2));
+		
+		healsService.eatCalories(100, LocalDate.of(2016, 9, 3));
+		healsService.drinkWater(0.3, LocalDate.of(2016, 9, 3));
+		healsService.moveHours(0.5, LocalDate.of(2016, 9, 3));
+		healsService.makeSteps(100, LocalDate.of(2016, 9, 3));
+		
+		double[] resultPercentArray = {35.0, 10.0, 20.0, 35.0};
+		
+		assertTrue(Arrays.equals(resultPercentArray, healsService.getDatePeriodProcentReport(startDate, endDate)));
 	}
 	
 }
